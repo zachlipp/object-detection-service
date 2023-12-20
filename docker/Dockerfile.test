@@ -1,0 +1,11 @@
+ARG BASE_IMAGE
+
+FROM ${BASE_IMAGE}
+
+RUN pip install \
+  pytest==7.4.3 \
+  httpx==0.25.1
+
+COPY tests ./tests
+
+ENTRYPOINT python3 -m pytest --disable-warnings tests

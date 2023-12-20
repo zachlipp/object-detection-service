@@ -1,0 +1,6 @@
+aiofiles==23.2.1
+fastapi==0.104.1
+pydantic==2.5.1
+torch==2.1.1
+torchvision==0.16.1
+uvicorn==0.24.0.post1

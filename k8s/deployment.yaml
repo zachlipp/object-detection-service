@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: detection
+  name: detection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: detection
+  template:
+    metadata:
+      labels:
+        app: detection
+    spec:
+      containers:
+      - image: localhost:5001/detection
+        name: detection
+        resources:
+          requests:
+            cpu: 1
+            memory: 500M
+          limits:
+            memory: 1000M
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: detection
+spec:
+  selector:
+    app: detection
+  ports:
+    - protocol: TCP
+      port: 1337
+      targetPort: 1337
+

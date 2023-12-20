@@ -1,0 +1,11 @@
+repos:
+-   repo: local
+    hooks:
+      - id: lint
+        name: Run linting
+        entry: make lint
+        language: system
+      - id: type check
+        name: Check types
+        entry: make mypy
+        language: system
