@@ -1,7 +1,15 @@
 .PHONY: build run-docker kill-docker lint build-test run-test open-docs create-cluster push deploy port-forward
 
+# For windows support, use WSL :)
+PROCESSOR=$(shell uname -p)
+ifeq (${PROCESSOR}, arm)
+	ARCH=arm64
+else
+	ARCH=cpu
+endif
+
 build:
-	docker build -t localhost:5001/detection -f docker/Dockerfile .
+	docker build --build-arg ARCH=${ARCH} -t localhost:5001/detection -f docker/Dockerfile .
 
 run: build
 	docker run --rm --name detection -p 1337:1337 --name detection localhost:5001/detection

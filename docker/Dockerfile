@@ -1,4 +1,6 @@
-FROM ultralytics/yolov5:v7.0-arm64
+ARG ARCH
+
+FROM ultralytics/yolov5:v7.0-${ARCH}
 
 RUN apt-get update && \
   apt-get install -y unzip
