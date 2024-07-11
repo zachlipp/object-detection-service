@@ -1,4 +1,4 @@
-*.jpg
+outputs/*.jpg
 outputs/detection.json
 
 # Byte-compiled / optimized / DLL files
