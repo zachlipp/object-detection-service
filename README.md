@@ -44,7 +44,6 @@ This repository contains Github Actions for linting, testing, and building. More
 As a part of this project, I wanted to produce a simple example of how to deploy this service in Kubernetes. I wrote a script to create a Kubernetes cluster with kind, running a local docker image registry, and using that registry in the local cluster to run images. Run with `make create-cluster`, then `make push`, `make deploy`, and `make port-forward` to explore the Kubernet-ized service at `localhost:1338`.
 
 ## Gotchas
-- I haven't tested this service on an Intel CPU, and as of now it only supports ARM for Apple Silicon. Intel support should just require changing the base ultralytics image and altering the `make run-actions-locally` command.
 - The endpoints are a bit of a mess. Two return JPG byte streams, one returns a JSON payload with a b64encoded PNG. This should be rectified. The byte streams are nice because you can actually view the image in your browser, though.
 - I could expose more options in `process_image`; I just wanted to show the pattern for how to do it.
 - The CI pipelines need some love. For example, we probably want to build less often than each push...especially if we're also testing on each push, which necessarily builds the image, too.
