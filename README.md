@@ -8,7 +8,7 @@ This service identifies the objects in an image.
 
 ## 💥 Features
 ### 📸 **Image processing**
-Users can scale the image up or down before providing it to the model. The `process_image` function can be extended to support abitrary image transformations.
+Users can scale the image up or down before providing it to the model. The `process_image` function can be extended to support arbitrary image transformations.
 
 ### 🪄 **Object detection**
 The model identifies known objects in the image, and returns bounding boxes and confidence scores for each prediction.
@@ -28,7 +28,7 @@ This service exposes port `1337` to the host with the following endpoints:
 - `/docs` and `/redoc`, which display FastAPI's generated OpenAPI spec for the endpoints (the spec itself is available at `/openapi.json`)
 - `/get_image`, which parses the URI from `GET` requests to show users what image from COCO they're processing, e.g. [http://localhost:1337/get_image/144](http://localhost:1337/get_image/144)
 - `/process_image`, which accepts `POST` requests which indicate the image to prepare for prediction and how to process it
-- `/predict`, which accepts `POST` requests which incidate the processed image to process
+- `/predict`, which accepts `POST` requests which indicate the processed image to process
 
 ## 🤝 Contributing
 ### 🤙 Issues are preferred
@@ -75,7 +75,7 @@ Next, install the pre-commit hooks with `pre-commit install`, and install the co
 
 <h3>Areas for improvement</h3>
 <ul>
-    <li><strong>The endpoints could be more consistent</strong>. Two return JPG byte streams, one returns a JSON payload with a b64encoded PNG. I think consistency here might be preferrable (e.g. all return images by default, but the prediction JSON is available with a special payload or the like.)</li>
+    <li><strong>The endpoints could be more consistent</strong>. Two return JPG byte streams, one returns a JSON payload with a b64encoded PNG. I think consistency here might be preferable (e.g. all return images by default, but the prediction JSON is available with a special payload or the like.)</li>
     <li><strong><code>/process_image</code> doesn't do much for now</strong>. This is more of a placeholder than a useful part of the pipeline. Extending it with more options would make it feel more essential.</li>
     <li><strong>The Python functions could use more docstrings</strong>. I focused on this README, tests, and type annotations instead; but docstrings are still valuable in a codebase.</li>
 </ul>
