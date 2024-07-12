@@ -77,7 +77,7 @@ Next, install the pre-commit hooks with `pre-commit install`, and install the co
 <ul>
     <li><strong>The endpoints could be more consistent</strong>. Two return JPG byte streams, one returns a JSON payload with a b64encoded PNG. I think consistency here might be preferrable (e.g. all return images by default, but the prediction JSON is available with a special payload or the like.)</li>
     <li><strong><code>/process_image</code> doesn't do much for now</strong>. This is more of a placeholder than a useful part of the pipeline. Extending it with more options would make it feel more essential.</li>
-    <li><strong>Write more docstrings</strong>. I focused on this README, tests, and type annotations instead; but docstrings are still valuable in a codebase.</li>
+    <li><strong>The Python functions could use more docstrings</strong>. I focused on this README, tests, and type annotations instead; but docstrings are still valuable in a codebase.</li>
 </ul>
 </details>
 
