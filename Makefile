@@ -1,4 +1,4 @@
-.PHONY: build run-docker kill-docker lint build-test run-test open-docs create-cluster push deploy port-forward
+.PHONY: build run_docker kill lint mypy build_test test open_docs create_cluster push deploy port_forward get_image view_image process_image predict view_detection_image view_detection_json run_actions_locally
 
 # For windows support, use WSL :)
 PROCESSOR=$(shell uname -p)
@@ -12,7 +12,7 @@ build:
 	docker build --build-arg ARCH=${ARCH} -t localhost:5001/detection -f docker/Dockerfile .
 
 run: build
-	docker run --rm --name detection -p 1337:1337 --name detection localhost:5001/detection
+	docker run -d --rm --name detection -p 1337:1337 --name detection localhost:5001/detection
 
 kill:
 	docker kill detection
@@ -23,14 +23,14 @@ lint:
 mypy:
 	mypy src
 
-build-test: build
+build_test: build
 	docker build -t detection-test --build-arg BASE_IMAGE=localhost:5001/detection -f docker/Dockerfile.test .
 
-test: build-test
+test: build_test
 	docker run --rm --name detection-test detection-test
 
 # works on mac
-open-docs:
+open_docs:
 	open http://localhost:1337/docs
 
 # Interactive usage once docker is running
@@ -46,14 +46,15 @@ process_image:
 predict:
 	curl -X POST localhost:1337/predict -d '{"image_id": "144"}' -H 'Content-Type: application/json' > outputs/detection.json
 
-extract-detection-image: predict
+view_detection_image: predict
 	cat outputs/detection.json | jq -r '.image' | base64 -d > outputs/detection.png
+	open outputs/detection.png
 
-view-detection-json: predict
+view_detection_json: predict
 	cat outputs/detection.json | jq '.image = "redacted_for_readability"'
 
 # Kubernetes commands
-create-cluster:
+create_cluster:
 	./k8s/kind_with_registry.sh
 
 push: build
@@ -62,8 +63,8 @@ push: build
 deploy:
 	kubectl apply -f k8s/deployment.yaml
 
-port-forward:
+port_forward:
 	kubectl port-forward service/detection 1338:1337
 
-run-actions-locally:
+run_actions_locally:
 	act --container-architecture linux/amd64
