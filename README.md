@@ -1,50 +1,85 @@
-# Image detection service
+<h1 align="center">Image Detection Service</h1>
+<h3 align="center">Using YOLOv5 to segment COCO128 images</h3>
 
-This repository implements an image detection service leveraging ultralytics' YOLOv5 model. I produced it to demonstrate how to build a machine learning web service, including unit and integration tests, containerized building and serving, dependency management, and static analysis (including type checking). I originally developed this project for an interview.
+![](https://github.com/zachlipp/object-detection-service/blob/figs/figs/flow.png)
 
-## Developer tools
+## 📝 Overview
+This service identifies the objects in an image.
+
+## 💥 Features
+### 📸 **Image processing**
+Users can scale the image up or down before providing it to the model. The `process_image` function can be extended to support abitrary image transformations.
+
+### 🪄 **Object detection**
+The model identifies known objects in the image, and returns bounding boxes and confidence scores for each prediction.
+
+### ⏩ **Quick startup**
+The Docker image bakes the model weights and image dataset into an early build layer. This means running the image once it is built - or modifying the code - can work much faster.
+
+## ⚡ Quick Start
+- Clone this repository: `git clone https://github.com/zachlipp/object_detection_service.git`
+- Build and run the server (requires `docker`, `make`): `make run`
+- Process an example image: `make process_image`
+- Predict bounding boxes: `make predict`
+- Display the processed image and bounding boxes: `make view_detection_image`. These require the tools `curl` and `jq` (See <a href="#-contributing">Contributing</a> for details.)
+
+## 📖 Endpoints
+This service exposes port `1337` to the host with the following endpoints:
+- `/docs` and `/redoc`, which display FastAPI's generated OpenAPI spec for the endpoints (the spec itself is available at `/openapi.json`)
+- `/get_image`, which parses the URI from `GET` requests to show users what image from COCO they're processing, e.g. [http://localhost:1337/get_image/144](http://localhost:1337/get_image/144)
+- `/process_image`, which accepts `POST` requests which indicate the image to prepare for prediction and how to process it
+- `/predict`, which accepts `POST` requests which incidate the processed image to process
+
+## 🤝 Contributing
+### 🤙 Issues are preferred
+I have some ideas on the future of this project. Your proposed changes may not match those ideas. Let's discuss it in an issue to see if we can align on something before you write a bunch of code.
+
+### 🧰 Devtools
+This project uses the following tools:
 - docker
-- kubectl
+- make
+- curl
 - [pre-commit](https://pre-commit.com/)
 - [act](https://github.com/nektos/act)
-- kind
 - jq
+- kind
+- kubectl
 
-To contribute, install these tools. Then install the pre-commit hooks with `pre-commit install`, and install the correct versions of the developer python packages with `pip3 install -r requirements.dev.txt`.
+To use all of the commands in the `Makefile`, you'll need to install these tools.
 
-## The service
+Next, install the pre-commit hooks with `pre-commit install`, and install the correct versions of the developer python packages with `pip3 install -r requirements.dev.txt`. This installs Python-specific developer tools, namely `ruff` and `mypy`.
 
-This repository manages an image detection web service that exposes three endpoints:
-- `get_image`, which returns the COCO image corresponding to the provided ID
-- `process_image`, which accepts an optional argument `scaling_factor` to scale the image. The goal for this endpoint was to demonstrate how to accept optional arguments.
-- `predict`, which returns predicted object segmentations for the provided image. **Images must be processed before they can be predicted.**
+### 👷 Useful development commands
+- `make test` runs unit tests and integration tests
+- `make run-actions-locally` uses `act` to simulate a local run of GitHub Actions
+- To run the application on a local Kubernetes cluster (using `kind`), use:
+    - `make create_cluster`
+    - `make push` (builds the image and pushes it to a local registry)
+    - `make deploy`
+    - `make port_forward` (access the service on `localhost:1338`)
 
-Because this web server is built using FastAPI, an OpenAPI schema is automatically available at `/openapi.json`, with rendered specifications at `/redoc` and `/docs`. View them with `make run` and then open `http://localhost:1337/docs`.
+## 🥁 Personal rating + reflection 🥁
+<details open="">
+<summary>Personal rating</summary>
+<h3>❤️❤️❤️️❤️🖤 (4/5)</h3>
+<h3>Reflection</h3>
 
-I leverage the COCO128 image detection dataset and the YOLOv5s model. There's a tradeoff between Docker image size and startup time, I opt for a larger image with a quicker start by pre-downloading the image dataset and model at build time. As well, I start with ultralytics' own docker image as my base image to save time managing dependencies.
+<p>This is a great example of how to get value out of a pre-trained model. It's also a good reflection of a lot of my skills - creating Python servers, test suites, developer UX, and even some basic CI/CD workflows.</p>
 
-### Using the service
+<p>The highlight for me here is the test pipeline:
+<ul>
+    <li>Tests run in a container built on-top of the development container, so we get the speedup from our development cache in a reproducible environment.</li>
+    <li>Tests are separated by functionality (`integration_tests`, `unit_tests`). This separates the layers of tests in an understandable way and provides clear guidance when extending the test suite.</li>
+    <li>Tests "just work." Test discovery and relative imports in Python isn't always the easiest nut to crack. This is now a reference implementation for my future work.</li>
+</ul>
 
-Once the container is running (`make run`), use `curl` through the `Makefile` to actually run requests through the model:
-- `make get_image`
-- `make process_image`
-- `make predict`
-- You may want to use `make save-detection-image` and `make view-detection-json` to simplify seeing the results of `make predict`. These require the tool `jq`.
+<h3>Areas for improvement</h3>
+<ul>
+    <li><strong>The endpoints could be more consistent</strong>. Two return JPG byte streams, one returns a JSON payload with a b64encoded PNG. I think consistency here might be preferrable (e.g. all return images by default, but the prediction JSON is available with a special payload or the like.)</li>
+    <li><strong><code>/process_image</code> doesn't do much for now</strong>. This is more of a placeholder than a useful part of the pipeline. Extending it with more options would make it feel more essential.</li>
+    <li><strong>The Python functions could use more docstrings</strong>. I focused on this README, tests, and type annotations instead; but docstrings are still valuable in a codebase.</li>
+</ul>
+</details>
 
-## Testing
-
-This repository contains some unit test and integration tests for the service. They are run in Docker with `make test`. This docker image is built on top of the development image, meaning we get to keep our build cache from before - this greatly speeds up build times.
-
-## CI Pipeline
-
-This repository contains Github Actions for linting, testing, and building. Moreover, it also supports running these locally with `make-run-actions-locally`.
-
-## Kubernetes
-
-As a part of this project, I wanted to produce a simple example of how to deploy this service in Kubernetes. I wrote a script to create a Kubernetes cluster with kind, running a local docker image registry, and using that registry in the local cluster to run images. Run with `make create-cluster`, then `make push`, `make deploy`, and `make port-forward` to explore the Kubernet-ized service at `localhost:1338`.
-
-## Gotchas
-- The endpoints are a bit of a mess. Two return JPG byte streams, one returns a JSON payload with a b64encoded PNG. This should be rectified. The byte streams are nice because you can actually view the image in your browser, though.
-- I could expose more options in `process_image`; I just wanted to show the pattern for how to do it.
-- The CI pipelines need some love. For example, we probably want to build less often than each push...especially if we're also testing on each push, which necessarily builds the image, too.
-- There are very few docstrings. I compromised and focused on type annotations instead.
+## 🤗 Kudos
+- The Ultralytics team for publishing the [YOLOv5 model](https://github.com/ultralytics/yolov5) (and Docker images for it!)
