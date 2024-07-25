@@ -1,0 +1,45 @@
+direction: right
+style.fill: transparent
+gi: "" {
+  style.fill: transparent
+  style.stroke: transparent
+}
+gi.img: "" {
+  style.font: mono
+  shape: image
+  icon: https://raw.githubusercontent.com/zachlipp/object-detection-service/figs/figs/raw.jpg
+}
+gi.route: "/predict" {
+  style.font: mono
+  style.fill: white
+}
+
+pi: "" {
+  style.fill: transparent
+  style.stroke: transparent
+}
+pi.img: "" {
+  shape: image
+  icon: https://raw.githubusercontent.com/zachlipp/object-detection-service/figs/figs/processed.jpg
+  width: 100
+}
+pi.route: /process_image {
+  style.font: mono
+  style.fill: white
+}
+
+pred: "" {
+  style.fill: transparent
+  style.stroke: transparent
+}
+pred.img: "" {
+  shape: image
+  icon: https://raw.githubusercontent.com/zachlipp/object-detection-service/figs/figs/detection.png
+  width: 100
+}
+pred.route: /predict {
+  style.font: mono
+  style.fill: white
+}
+
+gi -> pi -> pred
